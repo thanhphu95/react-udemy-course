@@ -1,64 +1,60 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import './App.css';
-import Person from './Component/person';
+import Person from './Component/Person';
+import { personArr } from './MockData/Person';
+import ErrorBounderies from './ErrorBounderies/ErrorBounderies';
 
-const App = () => {
-  const [state, setState] = useState(
-    {
-      person: [
-        {
-          name: 'Eevee',
-          age: 24
-        },
-        {
-          name: 'Charmander',
-          age: 19
-        },
-        {
-          name: 'Pikachu',
-          age: 23
-        },
-      ],
-      others: 'example of state'
+class App extends Component {
+  state = {
+    persons: personArr,
+    others: 'example of state',
+    togglePerson: true
+  };
+  // Tuan's idea
+  // const handleChange = id => event => {
+  //   setState({
+  //     ...state,
+  //     person: state.person.map(p => ({...p, name: p.id === id ? event.target.value : p.name}))
+  //   });
+  // }
+
+  handleChange = (event, id) => {
+    this.setState({
+      ...this.state,
+      persons: this.state.persons.map(p => ({
+        ...p,
+        name: p.id === id ? event.target.value : p.name
+      }))
     });
-  const newPersons = [
-    {
-      name: 'Rayquaza',
-      age: 70
-    },
-    {
-      name: 'Groudon',
-      age: 50
-    },
-    {
-      name: 'Kyogre',
-      age: 50
-    },
-  ];
-  const changeName = () => {
-    setState({
-      ...state,
-      person: newPersons,
+  };
+
+  togglePerson = () => {
+    this.setState({
+      ...this.state,
+      togglePerson: !this.state.togglePerson
     });
+  };
+
+  render() {
+    const personComponent = (
+      <div>
+        {this.state.persons.map((item, index) => (
+          <ErrorBounderies key={index}>
+            <Person handleChange={this.handleChange} {...item} />
+          </ErrorBounderies>
+        ))}
+      </div>
+    );
+    return (
+      <div className="App">
+        <button onClick={this.togglePerson} className="Red">
+          Toggle person
+        </button>
+        {this.state.togglePerson && personComponent}
+        <br />
+      </div>
+    );
   }
-  const handleChange = (event) => {
-    const changePerson = [
-      {
-        name: event.target.value,
-        age: 13
-      }
-    ]
-    setState({
-      ...state,
-      person: changePerson,
-    });
-  }
-  return (
-    <div className="App">
-      <button onClick={changeName}>Change name</button>
-      {state.person.map(item => <Person handleChange={handleChange} key={item.name} {...item} />)}
-    </div>
-  );
 }
 
 export default App;
